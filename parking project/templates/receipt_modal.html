@@ -1,0 +1,35 @@
+<div class="modal fade" id="receiptModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-receipt me-2"></i>Parking Invoice</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="receipt-content-print">
+        <div class="text-center mb-3">
+          <h4 class="mb-0">SmartPark ANPR</h4>
+          <div class="text-muted small">Tax Invoice / Receipt</div>
+        </div>
+        <table class="table table-sm receipt-table">
+          <tbody>
+            <tr><th>Vehicle No.</th><td id="rc-plate">--</td></tr>
+            <tr><th>Slot</th><td id="rc-slot">--</td></tr>
+            <tr><th>Entry Time</th><td id="rc-entry">--</td></tr>
+            <tr><th>Exit Time</th><td id="rc-exit">--</td></tr>
+            <tr><th>Total Duration</th><td id="rc-duration">--</td></tr>
+            <tr><th>Base Charge</th><td id="rc-base">--</td></tr>
+            <tr><th>Extra Hours Charged</th><td id="rc-extra">--</td></tr>
+            <tr class="table-active"><th>Total Amount</th><td id="rc-total" class="fw-bold">--</td></tr>
+            <tr><th>Payment Mode</th><td id="rc-mode">--</td></tr>
+            <tr><th>Transaction ID</th><td id="rc-txn">--</td></tr>
+          </tbody>
+        </table>
+        <div class="text-center text-muted small mt-2">Thank you for parking with us!</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-accent" onclick="printReceipt()"><i class="bi bi-printer-fill me-1"></i>Print Receipt</button>
+      </div>
+    </div>
+  </div>
+</div>

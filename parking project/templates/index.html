@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - SmartPark ANPR{% endblock %}
+{% block content %}
+
+<div class="row g-3 mb-4">
+  <div class="col-6 col-lg-3">
+    <div class="card glass-card metric-card">
+      <div class="card-body">
+        <div class="text-muted small">Available Slots</div>
+        <div class="fs-2 fw-bold text-success" id="metric-available">--</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="card glass-card metric-card">
+      <div class="card-body">
+        <div class="text-muted small">Occupied Slots</div>
+        <div class="fs-2 fw-bold text-danger" id="metric-occupied">--</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="card glass-card metric-card">
+      <div class="card-body">
+        <div class="text-muted small">Today's Revenue</div>
+        <div class="fs-2 fw-bold text-accent" id="metric-revenue">--</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="card glass-card metric-card">
+      <div class="card-body">
+        <div class="text-muted small">Occupancy Rate</div>
+        <div class="fs-2 fw-bold" id="metric-occupancy">--</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-8">
+    <div class="card glass-card mb-3">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="bi bi-grid-3x3-gap-fill me-2"></i>Live Slot Map</span>
+        <span class="small text-muted">Auto-refreshing every 3s</span>
+      </div>
+      <div class="card-body">
+        <div id="slot-grid" class="slot-grid"></div>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="card glass-card mb-3">
+      <div class="card-header"><i class="bi bi-pie-chart-fill me-2"></i>Occupancy</div>
+      <div class="card-body"><canvas id="occupancyChart" height="200"></canvas></div>
+    </div>
+    <div class="card glass-card">
+      <div class="card-header"><i class="bi bi-graph-up me-2"></i>Weekly Revenue</div>
+      <div class="card-body"><canvas id="revenueChart" height="200"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<div class="card glass-card mt-3">
+  <div class="card-header"><i class="bi bi-stopwatch-fill me-2"></i>Currently Parked Vehicles (Live Timers)</div>
+  <div class="card-body table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead>
+        <tr>
+          <th>Plate No.</th><th>Type</th><th>Slot</th><th>Entry Time</th>
+          <th>Elapsed</th><th>Live Amount</th>
+        </tr>
+      </thead>
+      <tbody id="active-vehicles-body">
+        <tr><td colspan="6" class="text-center text-muted py-3">Loading...</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

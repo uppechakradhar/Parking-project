@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Entry Gate - SmartPark ANPR{% endblock %}
+{% block content %}
+<div class="row g-3">
+  <div class="col-lg-7">
+    <div class="card glass-card">
+      <div class="card-header"><i class="bi bi-camera-video-fill me-2"></i>Entry Gate ANPR Terminal</div>
+      <div class="card-body">
+        <ul class="nav nav-pills mb-3" id="entrySourceTabs">
+          <li class="nav-item"><button class="nav-link active" data-bs-toggle="pill" data-bs-target="#entryLive" data-bs-toggle-tab>Live Camera</button></li>
+          <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#entryUpload">Upload File</button></li>
+          <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#entryManual">Manual Entry</button></li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane fade show active" id="entryLive">
+            <div class="ratio ratio-16x9 bg-black rounded overflow-hidden mb-2">
+              <img id="entry-video-feed" src="" alt="Live feed will appear here" class="w-100 h-100 object-fit-cover" style="display:none;">
+              <div id="entry-feed-placeholder" class="d-flex align-items-center justify-content-center text-muted">
+                <span>Click "Start Camera" to begin streaming</span>
+              </div>
+            </div>
+            <button class="btn btn-outline-light btn-sm" id="btn-start-entry-cam"><i class="bi bi-play-fill"></i> Start Camera</button>
+            <button class="btn btn-outline-danger btn-sm" id="btn-stop-entry-cam"><i class="bi bi-stop-fill"></i> Stop</button>
+            <div class="form-text mt-1">Uses webcam index 0. For RTSP, edit the source query param in gate_scanner.js.</div>
+          </div>
+          <div class="tab-pane fade" id="entryUpload">
+            <input class="form-control mb-2" type="file" id="entry-file-input" accept="image/*,video/*">
+            <div class="form-text">Upload an image or video (e.g. sample files from generate_test_data.py).</div>
+          </div>
+          <div class="tab-pane fade" id="entryManual">
+            <input class="form-control mb-2" type="text" id="entry-manual-plate" placeholder="e.g. KA01AB1234">
+          </div>
+        </div>
+
+        <div class="row g-2 mt-2">
+          <div class="col-6">
+            <label class="form-label small">Vehicle Type</label>
+            <select id="entry-vehicle-type" class="form-select">
+              <option value="CAR">CAR</option>
+              <option value="BIKE">BIKE</option>
+              <option value="TRUCK/EV">TRUCK / EV</option>
+            </select>
+          </div>
+          <div class="col-6 d-flex align-items-end">
+            <button class="btn btn-accent w-100" id="btn-scan-entry"><i class="bi bi-upc-scan me-1"></i>Scan &amp; Process</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-5">
+    <div class="card glass-card mb-3">
+      <div class="card-header"><i class="bi bi-eye-fill me-2"></i>Recognition Result</div>
+      <div class="card-body text-center">
+        <div id="entry-plate-display" class="plate-display">-- NO PLATE --</div>
+        <span id="entry-confidence-badge" class="badge bg-secondary mt-2">Confidence: --</span>
+      </div>
+    </div>
+
+    <div class="card glass-card gate-card">
+      <div class="card-body text-center">
+        <div id="entry-gate-status" class="gate-status gate-closed">GATE CLOSED</div>
+        <div class="gate-barrier" id="entry-gate-barrier"></div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/gate_scanner.js') }}"></script>
+<script>initGateScanner('entry');</script>
+{% endblock %}

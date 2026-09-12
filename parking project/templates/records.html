@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}Records - SmartPark ANPR{% endblock %}
+{% block content %}
+<div class="card glass-card">
+  <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+    <span><i class="bi bi-journal-text me-2"></i>Vehicle History &amp; Records</span>
+    <div class="d-flex gap-2">
+      <input type="text" id="search-plate" class="form-control form-control-sm" placeholder="Search plate...">
+      <select id="filter-status" class="form-select form-select-sm">
+        <option value="">All Status</option>
+        <option value="PARKED">Parked</option>
+        <option value="COMPLETED">Completed</option>
+      </select>
+      <button class="btn btn-sm btn-outline-light" id="btn-search"><i class="bi bi-search"></i></button>
+      <a class="btn btn-sm btn-accent" id="btn-export-csv" href="/api/records?export=csv"><i class="bi bi-download me-1"></i>Export CSV</a>
+    </div>
+  </div>
+  <div class="card-body table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead>
+        <tr>
+          <th>Plate No.</th><th>Type</th><th>Slot</th><th>Entry</th><th>Exit</th>
+          <th>Duration (min)</th><th>Amount</th><th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="records-body">
+        <tr><td colspan="8" class="text-center text-muted py-3">Loading...</td></tr>
+      </tbody>
+    </table>
+    <nav>
+      <ul class="pagination justify-content-center mt-3" id="records-pagination"></ul>
+    </nav>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+let currentPage = 1;
+
+async function loadRecords(page = 1) {
+  currentPage = page;
+  const search = document.getElementById('search-plate').value.trim();
+  const status = document.getElementById('filter-status').value;
+  const params = new URLSearchParams({ page, per_page: 10, search, status });
+  const res = await fetch(`/api/records?${params.toString()}`);
+  const data = await res.json();
+
+  const tbody = document.getElementById('records-body');
+  tbody.innerHTML = '';
+  if (data.records.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted py-3">No records found</td></tr>';
+  }
+  data.records.forEach(r => {
+    const badgeClass = r.status === 'PARKED' ? 'bg-warning text-dark' : 'bg-success';
+    tbody.innerHTML += `
+      <tr>
+        <td class="fw-semibold">${r.vehicle_number}</td>
+        <td>${r.vehicle_type}</td>
+        <td>${r.slot_number || '--'}</td>
+        <td>${r.entry_time ? new Date(r.entry_time + 'Z').toLocaleString() : '--'}</td>
+        <td>${r.exit_time ? new Date(r.exit_time + 'Z').toLocaleString() : '--'}</td>
+        <td>${r.duration_minutes ?? '--'}</td>
+        <td>${r.amount != null ? fmtMoney(r.amount) : '--'}</td>
+        <td><span class="badge ${badgeClass}">${r.status}</span></td>
+      </tr>`;
+  });
+
+  const pagination = document.getElementById('records-pagination');
+  pagination.innerHTML = '';
+  for (let p = 1; p <= data.total_pages; p++) {
+    pagination.innerHTML += `<li class="page-item ${p === data.page ? 'active' : ''}">
+      <button class="page-link" onclick="loadRecords(${p})">${p}</button></li>`;
+  }
+}
+
+document.getElementById('btn-search').addEventListener('click', () => loadRecords(1));
+document.getElementById('filter-status').addEventListener('change', () => loadRecords(1));
+document.getElementById('search-plate').addEventListener('keydown', e => { if (e.key === 'Enter') loadRecords(1); });
+document.getElementById('btn-export-csv').addEventListener('click', function(e) {
+  const search = document.getElementById('search-plate').value.trim();
+  const status = document.getElementById('filter-status').value;
+  const params = new URLSearchParams({ export: 'csv', search, status });
+  this.href = `/api/records?${params.toString()}`;
+});
+
+loadRecords();
+</script>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Slots - SmartPark ANPR{% endblock %}
+{% block content %}
+<div class="card glass-card">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <span><i class="bi bi-layout-text-window-reverse me-2"></i>Parking Slot Management</span>
+    <div class="d-flex gap-2 small">
+      <span><span class="legend-dot bg-success"></span> Available</span>
+      <span><span class="legend-dot bg-danger"></span> Occupied</span>
+      <span><span class="legend-dot bg-warning"></span> Reserved</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <h6 class="text-muted">CAR Slots (A)</h6>
+    <div id="slot-grid-car" class="slot-grid mb-4"></div>
+    <h6 class="text-muted">BIKE Slots (B)</h6>
+    <div id="slot-grid-bike" class="slot-grid mb-4"></div>
+    <h6 class="text-muted">EV / TRUCK Slots (C)</h6>
+    <div id="slot-grid-ev" class="slot-grid"></div>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+async function loadSlotsPage() {
+  const res = await fetch('/api/slots');
+  const slots = await res.json();
+  const groups = { car: document.getElementById('slot-grid-car'),
+                    bike: document.getElementById('slot-grid-bike'),
+                    ev: document.getElementById('slot-grid-ev') };
+  Object.values(groups).forEach(g => g.innerHTML = '');
+  slots.forEach(s => {
+    const target = s.slot_type === 'CAR' ? groups.car : (s.slot_type === 'BIKE' ? groups.bike : groups.ev);
+    const cls = s.status === 'AVAILABLE' ? 'slot-available' : (s.status === 'OCCUPIED' ? 'slot-occupied' : 'slot-reserved');
+    const div = document.createElement('div');
+    div.className = `slot-box ${cls}`;
+    div.title = s.vehicle ? `${s.vehicle.vehicle_number}` : 'Available';
+    div.innerHTML = `<div class="slot-number">${s.slot_number}</div>` + (s.vehicle ? `<div class="slot-plate">${s.vehicle.vehicle_number}</div>` : '');
+    target.appendChild(div);
+  });
+}
+loadSlotsPage();
+setInterval(loadSlotsPage, 4000);
+</script>
+{% endblock %}
